@@ -19,7 +19,7 @@
       defer
     ></script>
     <!-- Punto di ingresso dei moduli -->
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="assets/js/main.js"></script>
   </head>
 
   <body>
@@ -37,7 +37,7 @@
           id="input-ricerca"
           name="squadra"
           class="form-control"
-          placeholder="Es. Arsenal"
+          placeholder="es. Arsenal, Lakers, Real Madrid..."
           required
         />
         <button type="submit" class="btn btn-cerca">Cerca</button>
@@ -50,19 +50,11 @@
         <h2 id="titolo-preferiti" class="titolo-sezione">
           <span aria-hidden="true">⭐</span> Le tue squadre preferite
         </h2>
-
         <div id="lista-preferiti" class="d-flex flex-wrap gap-3">
-          <!-- ESEMPIO STATICO: lo toglieremo quando lo genererà il JS -->
-          <article class="card-preferita">
-            <img src="https://placehold.co/100x100" alt="Logo Inter Milan" />
-            <h3>Inter Milan</h3>
-            <p>Italian Serie A</p>
-            <p>Italy</p>
-            <button type="button" class="btn btn-rimuovi">
-              <span aria-hidden="true">🗑</span> Rimuovi
-            </button>
-          </article>
-          <!-- FINE ESEMPIO -->
+          <p class="nessun-risultato">
+            Non hai ancora salvato nessuna squadra. Cercane una qui sopra e
+            aggiungila ai preferiti.
+          </p>
         </div>
       </section>
 
@@ -70,33 +62,23 @@
       <section aria-labelledby="titolo-risultati">
         <h2 id="titolo-risultati" class="titolo-sezione">Squadre trovate</h2>
 
-        <div id="risultati">
-          <!-- ESEMPIO STATICO: lo toglieremo quando lo genererà il JS -->
-          <article class="card-risultato">
-            <h3>Barcelona</h3>
+        <!-- Alert errore (nascosto) -->
+        <div id="errore" class="alert alert-danger d-none" role="alert"></div>
 
-            <div class="row g-4">
-              <div class="col-12 col-md-6">
-                <h4 class="titolo-eventi">Prossimi eventi</h4>
-                <ul class="lista-eventi list-unstyled mb-0">
-                  <li class="nessun-evento">Nessun evento in programma</li>
-                </ul>
-              </div>
-
-              <div class="col-12 col-md-6">
-                <h4 class="titolo-eventi">Ultimi risultati</h4>
-                <ul class="lista-eventi list-unstyled mb-0">
-                  <li>
-                    <span class="data-evento">17/05/2026</span>
-                    <span class="nome-evento">Barcelona vs Real Betis</span>
-                    <span class="badge bg-success ms-2">3 - 1</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </article>
-          <!-- FINE ESEMPIO -->
+        <!-- Spinner (nascosto) -->
+        <div id="spinner" class="d-flex justify-content-center my-4 d-none">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Caricamento...</span>
+          </div>
         </div>
+
+        <!-- Card delle squadre trovate -->
+        <div id="lista-squadre" class="d-flex flex-wrap gap-3">
+          <p class="nessun-risultato">Inizia cercando una squadra qui sopra.</p>
+        </div>
+
+        <!-- Dettagli della squadra selezionata -->
+        <div id="dettagli"></div>
       </section>
     </main>
   </body>

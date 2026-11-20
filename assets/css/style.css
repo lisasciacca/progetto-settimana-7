@@ -55,35 +55,53 @@ body {
   margin-bottom: 1.5rem;
 }
 
-/* ===== CARD SQUADRA PREFERITA ===== */
-.card-preferita {
+.nessun-risultato {
+  font-style: italic;
+  color: #666666;
+}
+
+/* ===== CARD SQUADRA (risultati e, più avanti, preferiti) ===== */
+.card-squadra {
   flex: 1 1 280px; /* parte da 280px, cresce, va a capo */
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   padding: 1rem;
   text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card-preferita img {
+.card-squadra:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.card-squadra:focus-visible {
+  outline: 3px solid #1b3366;
+  outline-offset: 2px;
+}
+
+.card-squadra img {
   width: 100px;
   height: 100px;
   object-fit: contain;
   margin-bottom: 1rem;
 }
 
-.card-preferita h3 {
+.card-squadra h3 {
   font-size: 1rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
-.card-preferita p {
+.card-squadra p {
   font-size: 0.875rem;
   color: #666666;
   margin-bottom: 0.25rem;
 }
 
+/* Bottone rimuovi: servirà con i preferiti */
 .btn-rimuovi {
   width: 100%;
   margin-top: 0.75rem;
@@ -102,7 +120,7 @@ body {
   color: #a30000;
 }
 
-/* ===== CARD RISULTATO RICERCA ===== */
+/* ===== CARD DETTAGLI SQUADRA ===== */
 .card-risultato {
   background-color: #ffffff;
   border-radius: 8px;
@@ -143,4 +161,17 @@ body {
 
 .nessun-evento {
   font-style: italic;
+}
+
+/* ===== MENO ANIMAZIONI SE RICHIESTO ===== */
+@media (prefers-reduced-motion: reduce) {
+  .card-squadra,
+  .btn-cerca,
+  .btn-rimuovi {
+    transition: none;
+  }
+
+  .card-squadra:hover {
+    transform: none;
+  }
 }
