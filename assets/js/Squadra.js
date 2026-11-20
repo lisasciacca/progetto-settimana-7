@@ -1,5 +1,6 @@
 // Rappresenta una squadra: traduce i dati grezzi dell'API in proprietà nostre
 export class Squadra {
+  // dati = oggetto grezzo di una squadra restituito dall'API
   constructor(dati) {
     this.id = dati.idTeam;
     this.nome = dati.strTeam;

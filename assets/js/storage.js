@@ -1,4 +1,4 @@
-// Gestione dei preferiti in localStorage
+// storage.js – Preferiti salvati in localStorage
 const CHIAVE_PREFERITI = "sportshub-preferiti";
 
 // Legge i preferiti salvati → array (vuoto se non c'è niente o se il dato è rovinato)

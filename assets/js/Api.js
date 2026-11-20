@@ -1,3 +1,9 @@
+// =====================================================================
+// api.js – Chiamate all'API di TheSportsDB
+// Fa solo le fetch e trasforma i dati grezzi in oggetti Squadra / Evento.
+// Non tocca mai il DOM.
+// =====================================================================
+
 import { Squadra } from "./Squadra.js";
 import { Evento } from "./Evento.js";
 
@@ -52,4 +58,22 @@ export async function caricaProssimiEventi(idTeam) {
 
   const dati = await getJSON(url);
   return (dati.events || []).map((e) => new Evento(e));
+}
+
+// Ultimi risultati di una squadra (usata per le preferite)
+export async function caricaUltimiEventi(idTeam) {
+  const url = new URL("eventslast.php", BASE_URL);
+  url.searchParams.set("id", idTeam);
+
+  const dati = await getJSON(url);
+  return (dati.results || []).map((e) => new Evento(e)); // eventslast → "results"
+}
+
+// Ultime partite di un campionato (es. 4328 = Premier League)
+export async function caricaUltimiEventiLega(idLega) {
+  const url = new URL("eventspastleague.php", BASE_URL);
+  url.searchParams.set("id", idLega);
+
+  const dati = await getJSON(url);
+  return (dati.events || []).map((e) => new Evento(e)); // eventspastleague → "events"
 }

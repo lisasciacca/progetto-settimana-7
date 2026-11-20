@@ -1,5 +1,14 @@
+// =====================================================================
+// ui.js – Creazione degli elementi nel DOM
+// Disegna card, liste, modal, notifiche e messaggi. Non fa mai fetch.
+// Tutto con createElement e textContent: in tutto il progetto niente innerHTML.
+// =====================================================================
+
+// Elementi fissi della pagina usati da più funzioni
 const spinner = document.getElementById("spinner");
 const alertErrore = document.getElementById("errore");
+const notifica = document.getElementById("notifica");
+const testoNotifica = document.getElementById("testo-notifica");
 
 // Crea un elemento con classi e testo, senza innerHTML
 export function creaElemento(tag, classi = "", testo = "") {
@@ -9,34 +18,77 @@ export function creaElemento(tag, classi = "", testo = "") {
   return el;
 }
 
-// Crea uno <span> con un'emoji decorativa, nascosta agli screen reader
-function creaIcona(emoji) {
-  const icona = creaElemento("span", "", emoji);
+// Crea un'icona di Bootstrap Icons (es. "star" → <i class="bi bi-star">),
+// decorativa e quindi nascosta agli screen reader
+function creaIcona(nome) {
+  const icona = creaElemento("i", `bi bi-${nome}`);
   icona.setAttribute("aria-hidden", "true");
   return icona;
 }
 
 // ===== SPINNER =====
+// Mostra lo spinner di caricamento (toglie la classe d-none di Bootstrap)
 export function mostraSpinner() {
   spinner.classList.remove("d-none");
 }
 
+// Nasconde lo spinner (rimette d-none)
 export function nascondiSpinner() {
   spinner.classList.add("d-none");
 }
 
 // ===== ERRORE =====
+// Mostra l'alert rosso con il messaggio d'errore
 export function mostraErrore(messaggio) {
   alertErrore.textContent = messaggio;
   alertErrore.classList.remove("d-none");
 }
 
+// Svuota e nasconde l'alert d'errore
 export function nascondiErrore() {
   alertErrore.textContent = "";
   alertErrore.classList.add("d-none");
 }
 
+// ===== BARRA DI NAVIGAZIONE =====
+
+// Icona e etichetta del bottone tema: indica il tema che si attiverà al click
+export function aggiornaBottoneTema(bottone, tema) {
+  const scuro = tema === "dark";
+  const etichetta = scuro ? "Attiva il tema chiaro" : "Attiva il tema scuro";
+
+  bottone.replaceChildren(creaIcona(scuro ? "sun" : "moon-stars"));
+  bottone.setAttribute("aria-label", etichetta);
+  bottone.title = etichetta; // suggerimento al passaggio del mouse
+}
+
+// Stato del bottone on/off della modalità semplificata
+export function aggiornaBottoneSemplificata(bottone, attiva) {
+  bottone.setAttribute("aria-pressed", attiva ? "true" : "false");
+}
+
+// Numero di squadre salvate nel badge del bottone "Preferiti"
+export function aggiornaContatorePreferiti(bottone, contatore, numero) {
+  contatore.textContent = numero;
+
+  const salvate = numero === 1 ? "1 salvata" : `${numero} salvate`;
+  bottone.setAttribute("aria-label", `Vai alle squadre preferite (${salvate})`);
+}
+
+// ===== NOTIFICA (toast Bootstrap) =====
+// tipo: "aggiunta" oppure "rimossa"
+export function mostraNotifica(testo, tipo) {
+  const aggiunta = tipo === "aggiunta";
+
+  testoNotifica.replaceChildren(creaIcona(aggiunta ? "star-fill" : "trash3"), ` ${testo}`);
+  notifica.classList.toggle("notifica-aggiunta", aggiunta);
+  notifica.classList.toggle("notifica-rimossa", !aggiunta);
+
+  bootstrap.Toast.getOrCreateInstance(notifica).show(); // API JS di Bootstrap
+}
+
 // ===== MESSAGGI (stato vuoto) =====
+// Sostituisce il contenuto di un contenitore con un messaggio (es. "Nessuna squadra trovata")
 export function mostraMessaggio(contenitore, testo) {
   contenitore.replaceChildren(creaElemento("p", "nessun-risultato mb-0", testo));
 }
@@ -67,10 +119,10 @@ function creaCardBase(squadra) {
 // Aggiorna testo e stato del bottone stella
 export function segnaPreferito(bottone, inPreferiti, nome) {
   if (inPreferiti) {
-    bottone.replaceChildren(creaIcona("★"), " Già nei preferiti");
+    bottone.replaceChildren(creaIcona("star-fill"), " Già nei preferiti");
     bottone.setAttribute("aria-label", `${nome} è già nei preferiti`);
   } else {
-    bottone.replaceChildren(creaIcona("☆"), " Aggiungi ai preferiti");
+    bottone.replaceChildren(creaIcona("star"), " Aggiungi ai preferiti");
     bottone.setAttribute("aria-label", `Aggiungi ${nome} ai preferiti`);
   }
   bottone.disabled = inPreferiti; // già nei preferiti → non cliccabile
@@ -95,7 +147,7 @@ function creaCardPreferita(squadra) {
   const bottone = creaElemento("button", "btn btn-rimuovi");
   bottone.type = "button";
   bottone.setAttribute("aria-label", `Rimuovi ${squadra.nome} dai preferiti`);
-  bottone.append(creaIcona("🗑"), " Rimuovi");
+  bottone.append(creaIcona("trash3"), " Rimuovi");
 
   card.append(bottone);
   return card;
@@ -111,6 +163,7 @@ export function renderSquadre(contenitore, squadre, preferiti) {
   });
 }
 
+// Disegna le card delle squadre preferite, oppure il messaggio di lista vuota
 export function renderPreferiti(contenitore, preferiti) {
   if (preferiti.length === 0) {
     mostraMessaggio(
@@ -129,8 +182,9 @@ export function renderPreferiti(contenitore, preferiti) {
 
 // ===== EVENTI =====
 
-// Una voce di lista: bottone che apre la modal di Bootstrap con i dettagli
-function creaVoceEvento(evento) {
+// Una voce di lista: bottone che apre la modal di Bootstrap con i dettagli.
+// conLuogo = true (appuntamenti): ora accanto alla data, stadio e paese a destra
+function creaVoceEvento(evento, conLuogo = false) {
   const voce = document.createElement("li");
 
   const bottone = creaElemento("button", "btn-evento");
@@ -140,23 +194,52 @@ function creaVoceEvento(evento) {
   bottone.dataset.bsTarget = "#modale-evento"; // → data-bs-target="#modale-evento"
   bottone.setAttribute("aria-haspopup", "dialog");
 
-  const data = creaElemento("span", "data-evento", evento.dataFormattata());
+  // Data, con l'ora accanto se richiesta e disponibile
+  let testoData = evento.dataFormattata();
+  const ora = evento.oraFormattata();
+  if (conLuogo && ora) {
+    testoData += `, ore ${ora}`;
+  }
+
+  const data = creaElemento("span", "data-evento", testoData);
   const partita = creaElemento(
     "span",
     "nome-evento",
     `${evento.casa} vs ${evento.trasferta}`
   );
-  bottone.append(data, partita);
 
   const punteggio = evento.punteggio();
-  if (punteggio) {
-    bottone.append(creaElemento("span", "badge bg-success ms-2", punteggio));
+  const badge = punteggio ? creaElemento("span", "badge bg-success ms-2", punteggio) : null;
+
+  if (!conLuogo) {
+    // Versione semplice (dettagli squadra): come prima
+    bottone.append(data, partita);
+    if (badge) bottone.append(badge);
+    voce.append(bottone);
+    return voce;
+  }
+
+  // Versione appuntamenti: sinistra (data e partita) + destra (luogo)
+  bottone.classList.add("evento-con-luogo");
+
+  const sinistra = document.createElement("span");
+  sinistra.append(data, partita);
+  if (badge) sinistra.append(badge);
+  bottone.append(sinistra);
+
+  // Stadio e paese, solo quelli presenti
+  const luogo = [evento.stadio, evento.paese].filter(Boolean).join(", ");
+  if (luogo) {
+    const destra = creaElemento("span", "luogo-evento");
+    destra.append(creaIcona("geo-alt"), ` ${luogo}`);
+    bottone.append(destra);
   }
 
   voce.append(bottone);
   return voce;
 }
 
+// Una colonna della card dettagli: titolo + lista di eventi (o messaggio se vuota)
 function creaListaEventi(titolo, eventi, messaggioVuoto) {
   const colonna = creaElemento("div", "col-12 col-md-6");
   const intestazione = creaElemento("h4", "titolo-eventi", titolo);
@@ -172,6 +255,7 @@ function creaListaEventi(titolo, eventi, messaggioVuoto) {
   return colonna;
 }
 
+// Card dei dettagli squadra: nome + due colonne (prossimi eventi, ultimi risultati)
 export function renderDettagli(contenitore, squadra, prossimi, ultimi) {
   contenitore.replaceChildren();
 
@@ -215,8 +299,162 @@ export function renderAppuntamenti(contenitore, eventi, squadreFallite) {
   }
 
   const lista = creaElemento("ul", "lista-eventi list-unstyled mb-0");
-  eventi.forEach((evento) => lista.append(creaVoceEvento(evento)));
+  eventi.forEach((evento) => lista.append(creaVoceEvento(evento, true))); // con ora e luogo
   contenitore.append(lista);
+}
+
+// ===== GRIGLIA DI PARTITE (ultimi risultati) =====
+
+// Iniziali per lo stemma segnaposto: "Northbridge Rovers" → "NR"
+function iniziali(nome) {
+  return nome
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((parola) => parola[0].toUpperCase())
+    .join("");
+}
+
+// Una squadra nella card: logo (o stemma con le iniziali) e, sotto, il nome
+function creaSquadraPartita(nome, logo) {
+  const blocco = creaElemento("span", "card-partita-squadra");
+
+  if (logo) {
+    const img = document.createElement("img");
+    img.src = logo;
+    img.alt = ""; // decorativo: il nome è scritto subito sotto
+    img.className = "card-partita-logo";
+    blocco.append(img);
+  } else {
+    // Squadre di esempio o senza logo: cerchio con le iniziali
+    const stemma = creaElemento("span", "card-partita-stemma", iniziali(nome));
+    stemma.setAttribute("aria-hidden", "true");
+    blocco.append(stemma);
+  }
+
+  blocco.append(creaElemento("span", "card-partita-nome", nome));
+  return blocco;
+}
+
+// Una card partita: bottone che apre la modal dell'evento
+function creaCardPartita(evento) {
+  const voce = creaElemento("li", "voce-partita"); // larghezza: 1/3 su PC, 1/2 tablet, intera su mobile
+
+  const card = creaElemento("button", "card-partita");
+  card.type = "button";
+  card.dataset.id = evento.id;
+  card.dataset.bsToggle = "modal";
+  card.dataset.bsTarget = "#modale-evento";
+  card.setAttribute("aria-haspopup", "dialog");
+
+  // Testa: campionato + eventuale badge "Esempio"
+  const testa = creaElemento("span", "card-partita-testa");
+  testa.append(creaElemento("span", "card-partita-lega", evento.lega || ""));
+  if (evento.esempio) {
+    testa.append(creaElemento("span", "badge text-bg-warning", "Esempio"));
+  }
+
+  // Tabellone: casa – punteggio (o "vs") – trasferta
+  const tabellone = creaElemento("span", "card-partita-tabellone");
+  tabellone.append(
+    creaSquadraPartita(evento.casa, evento.logoCasa),
+    creaElemento("span", "card-partita-punteggio", evento.punteggio() || "vs"),
+    creaSquadraPartita(evento.trasferta, evento.logoTrasferta)
+  );
+
+  // Piede: data, ora e luogo
+  const ora = evento.oraFormattata();
+  const quando = ora ? `${evento.dataFormattata()}, ore ${ora}` : evento.dataFormattata();
+  const piede = creaElemento("span", "card-partita-piede");
+  piede.append(creaElemento("span", "d-block", quando));
+
+  const luogo = [evento.stadio, evento.paese].filter(Boolean).join(", ");
+  if (luogo) {
+    const riga = creaElemento("span", "d-block");
+    riga.append(creaIcona("geo-alt"), ` ${luogo}`);
+    piede.append(riga);
+  }
+
+  card.append(testa, tabellone, piede);
+  voce.append(card);
+  return voce;
+}
+
+// Bottone freccia della striscia (‹ o ›)
+function creaFreccia(direzione, idLista) {
+  const precedente = direzione === "precedente";
+
+  const bottone = creaElemento("button", "btn btn-sm btn-barra carosello-freccia");
+  bottone.type = "button";
+  bottone.setAttribute("aria-controls", idLista);
+  bottone.setAttribute(
+    "aria-label",
+    precedente ? "Mostra le partite precedenti" : "Mostra le partite successive"
+  );
+  bottone.append(creaIcona(precedente ? "chevron-left" : "chevron-right"));
+  return bottone;
+}
+
+// Striscia di partite scorrevole con frecce, nota sui segnaposto e avviso per le squadre fallite
+export function renderPartite(contenitore, eventi, squadreFallite = []) {
+  contenitore.replaceChildren();
+
+  if (squadreFallite.length > 0) {
+    contenitore.append(
+      creaElemento(
+        "p",
+        "alert alert-warning py-2 small",
+        `Non è stato possibile caricare i risultati di: ${squadreFallite.join(", ")}.`
+      )
+    );
+  }
+
+  // Riga in alto: nota sugli esempi a sinistra, frecce a destra
+  const barra = creaElemento("div", "carosello-barra");
+
+  const nota = eventi.some((evento) => evento.esempio)
+    ? "Le partite segnate come Esempio sono segnaposto: squadre reali, ma risultati inventati."
+    : "";
+  barra.append(creaElemento("p", "nota-esempio", nota));
+
+  const idLista = `${contenitore.id}-lista`; // es. "risultati-lega-lista"
+  const precedente = creaFreccia("precedente", idLista);
+  const successiva = creaFreccia("successiva", idLista);
+
+  const frecce = creaElemento("div", "d-flex gap-2");
+  frecce.append(precedente, successiva);
+  barra.append(frecce);
+
+  // La striscia
+  const lista = creaElemento("ul", "lista-partite");
+  lista.id = idLista;
+  eventi.forEach((evento) => lista.append(creaCardPartita(evento)));
+
+  contenitore.append(barra, lista);
+
+  // Frecce disattivate all'inizio e alla fine della striscia
+  function aggiornaFrecce() {
+    const fine = lista.scrollWidth - lista.clientWidth;
+    precedente.disabled = lista.scrollLeft <= 0;
+    successiva.disabled = lista.scrollLeft >= fine - 1; // -1: margine per gli arrotondamenti
+  }
+
+  // Scorre di una "pagina" (la larghezza visibile): 3 card su PC, 2 su tablet
+  function scorri(verso) {
+    const fermo =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      document.documentElement.hasAttribute("data-semplificata");
+
+    lista.scrollBy({
+      left: verso * lista.clientWidth,
+      behavior: fermo ? "auto" : "smooth",
+    });
+  }
+
+  precedente.addEventListener("click", () => scorri(-1));
+  successiva.addEventListener("click", () => scorri(1));
+  lista.addEventListener("scroll", aggiornaFrecce);
+  aggiornaFrecce();
 }
 
 // ===== MODAL DETTAGLI EVENTO =====
@@ -246,9 +484,17 @@ function aggiungiDato(elenco, etichetta, valore) {
   elenco.append(dt, dd);
 }
 
+// Riempie la modal dell'evento: eventuale avviso "esempio", tabellone e dati in un <dl>
 export function renderModaleEvento(titolo, corpo, evento) {
   titolo.textContent = evento.nomeEvento || `${evento.casa} vs ${evento.trasferta}`;
   corpo.replaceChildren();
+
+  // Partita segnaposto: lo dico chiaramente
+  if (evento.esempio) {
+    corpo.append(
+      creaElemento("p", "alert alert-warning py-2 small", "Partita di esempio: non è una partita reale.")
+    );
+  }
 
   // Tabellone: casa – punteggio (o "vs") – trasferta
   const tabellone = creaElemento("div", "tabellone");
@@ -299,6 +545,7 @@ function creaLinkEsterno(url, testo) {
   return link;
 }
 
+// Riempie la modal della squadra: banner, intestazione, dati, colori, storia e link
 export function renderModaleSquadra(titolo, corpo, squadra) {
   titolo.textContent = squadra.nome;
   corpo.replaceChildren();

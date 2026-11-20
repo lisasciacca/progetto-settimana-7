@@ -1,16 +1,224 @@
-/* ===== BASE ===== */
-body {
-  background-color: #f4f5f8;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #1a1a1a;
+/* =====================================================================
+   SPORTSHUB – FOGLIO DI STILE
+
+   INDICE
+    1. Variabili: tema chiaro
+    2. Variabili: tema scuro
+    3. Base
+    4. Tipografia sportiva e titoli
+    5. Barra di navigazione (header)
+    6. Hero e ricerca
+    7. Mostra / nascondi preferiti (collapse)
+    8. Contenitore e titoli sezione
+    9. Filtro per sport
+   10. Card appuntamenti
+   11. Card partita (ultimi risultati)
+   12. Card squadra (risultati e preferiti)
+   13. Card dettagli squadra
+   14. Modal (tutte)
+   15. Modal dettagli evento
+   16. Modal info squadra
+   17. Notifica (toast)
+   18. Footer
+   19. Meno animazioni se richiesto
+   20. Modalità semplificata
+   21. Pallina app e modal app
+
+   Per saltare a una sezione: Ctrl+F e cerca "===== " seguito dal numero,
+   per esempio "===== 11." (con gli "=" non trovi anche 1, 12, 13...).
+   ===================================================================== */
+
+/* ===== 1. VARIABILI: TEMA CHIARO ===== */
+:root {
+  /* Font (uguali in entrambi i temi); dopo il primo nome, i font di riserva */
+  --sh-font-testo: "Barlow", Arial, sans-serif;
+  --sh-font-titoli: "Oswald", "Arial Narrow", Arial, sans-serif;
+
+  /* Azzurro dell'alone delle card: bordo delle modal e hover dei link del footer */
+  --sh-azzurro: #8fb0ff;
+
+  --sh-primario: #1b3366; /* blu del marchio (hero, footer) */
+  --sh-accento: #1b3366; /* titoli, bordi, contorni */
+  --sh-su-accento: #ffffff; /* testo sopra lo sfondo accento */
+  --sh-accento-chiaro: #e3e8f2; /* hover */
+  --sh-sfondo: #f4f5f8; /* sfondo pagina */
+  --sh-card: #ffffff; /* sfondo card e barra */
+  --sh-testo: #1a1a1a;
+  --sh-testo-secondario: #666666;
+  --sh-bordo: #e9ecef;
+  --sh-ombra: rgba(0, 0, 0, 0.08);
+  --sh-ombra-hover: rgba(143, 176, 255, 0.7); /* azzurro #8fb0ff */
+  --sh-footer: #1b3366;
+  --sh-disattivo-sfondo: #e9ecef;
+  --sh-disattivo-bordo: #ced4da;
+  --sh-disattivo-testo: #6c757d;
+  --sh-rimuovi-sfondo: #fde4e6;
+  --sh-rimuovi-hover: #f8c9cd;
+  --sh-rimuovi-testo: #a30000;
 }
 
-/* ===== HEADER ===== */
+/* ===== 2. VARIABILI: TEMA SCURO ===== */
+[data-bs-theme="dark"] {
+  --sh-accento: #8fb0ff; /* il blu scuro non si leggerebbe sul nero */
+  --sh-su-accento: #10151f;
+  --sh-accento-chiaro: #24324f;
+  --sh-sfondo: #10151f;
+  --sh-card: #1b2230;
+  --sh-testo: #e9ecef;
+  --sh-testo-secondario: #a7b0bf;
+  --sh-bordo: #2c3647;
+  --sh-ombra: rgba(0, 0, 0, 0.4);
+  --sh-ombra-hover: rgba(143, 176, 255, 0.45); /* azzurro #8fb0ff, più leggero sul nero */
+  --sh-footer: #0b1220;
+  --sh-disattivo-sfondo: #2c3647;
+  --sh-disattivo-bordo: #3b475c;
+  --sh-disattivo-testo: #8a94a6;
+  --sh-rimuovi-sfondo: #3a1d22;
+  --sh-rimuovi-hover: #4d242b;
+  --sh-rimuovi-testo: #ff9aa5;
+}
+
+/* ===== 3. BASE ===== */
+body {
+  background-color: var(--sh-sfondo);
+  font-family: var(--sh-font-testo);
+  color: var(--sh-testo);
+}
+
+/* ===== 4. TIPOGRAFIA SPORTIVA E TITOLI ===== */
+
+/* Titoli, marchio, tabellone e filtri in Oswald */
+h1,
+h2,
+h3,
+h4,
+.marchio,
+.tabellone-nome,
+.tabellone-punteggio,
+.btn-filtro {
+  font-family: var(--sh-font-titoli);
+}
+
+/* Maiuscolo e lettere un po' distanziate: effetto "tabellone" */
+.marchio,
+.hero-titolo,
+.titolo-sezione,
+.titolo-eventi,
+.titolo-sezione-modale,
+.modal-title,
+.btn-filtro {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Titoli resi focusabili da JS (tabindex="-1"): niente contorno, non sono cliccabili */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Spazio sopra i titoli quando la pagina ci scorre (la barra fissa li coprirebbe) */
+.titolo-sezione,
+.card-risultato h3 {
+  scroll-margin-top: 5rem;
+}
+
+/* ===== 5. BARRA DI NAVIGAZIONE (header) ===== */
+.barra {
+  background-color: var(--sh-card);
+  border-bottom: 1px solid var(--sh-bordo);
+  box-shadow: 0 1px 4px var(--sh-ombra);
+}
+
+.marchio {
+  color: var(--sh-accento);
+  font-weight: 700;
+}
+
+.marchio:hover,
+.marchio:focus-visible {
+  color: var(--sh-accento);
+}
+
+.btn-barra {
+  background-color: transparent;
+  border: 1px solid var(--sh-accento);
+  color: var(--sh-accento);
+  border-radius: 999px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-barra:hover,
+.btn-barra:focus-visible {
+  background-color: var(--sh-accento-chiaro);
+  border-color: var(--sh-accento);
+  color: var(--sh-accento);
+}
+
+/* Bottone on/off premuto (modalità semplificata attiva) */
+.btn-barra[aria-pressed="true"],
+.btn-barra[aria-pressed="true"]:hover {
+  background-color: var(--sh-accento);
+  border-color: var(--sh-accento);
+  color: var(--sh-su-accento);
+}
+
+.contatore-preferiti {
+  background-color: var(--sh-accento);
+  color: var(--sh-su-accento);
+}
+
+/* ===== 6. HERO E RICERCA ===== */
 .hero {
-  background-color: #1b3366;
+  position: relative; /* riferimento per ::before e ::after */
+  background-color: var(--sh-primario); /* si vede se la foto non si carica */
   color: #ffffff;
-  text-align: center;
-  padding: 3rem 1.25rem;
+  text-align: center; /* su mobile tutto centrato */
+  padding: 4rem 0;
+  overflow: hidden; /* nasconde la parte di foto che avanza */
+}
+
+/* Livello 1: la foto di sfondo, specchiata.
+   Foto di Kampus Production su Pexels (versione larga 1600px) */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: -80px; /* 80px in più a destra: durante l'ingresso copre sempre tutto */
+  background-image: url("https://images.pexels.com/photos/8941651/pexels-photo-8941651.jpeg?auto=compress&cs=tinysrgb&w=1600");
+  background-size: cover; /* riempie tutta la hero senza deformarsi */
+  background-position: center;
+  transform: scaleX(-1); /* specchio orizzontale, solo per lo sfondo */
+  animation: entrata-sinistra 0.9s ease-out both;
+}
+
+/* Livello 2: velo blu per leggere bene il testo (su mobile uniforme) */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0; /* top, right, bottom, left: 0 */
+  background-color: rgba(27, 51, 102, 0.75);
+}
+
+/* Livello 3: il contenuto, davanti a foto e velo */
+.hero > .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Ingresso da sinistra: parte spostato e trasparente, arriva al suo posto.
+   scaleX(-1) va ripetuto qui: un transform sostituisce l'altro, non si sommano */
+@keyframes entrata-sinistra {
+  from {
+    transform: translateX(-80px) scaleX(-1);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scaleX(-1);
+    opacity: 1;
+  }
 }
 
 .hero-titolo {
@@ -25,7 +233,39 @@ body {
 
 .form-ricerca {
   max-width: 540px;
-  margin: 0 auto;
+  margin: 0 auto; /* centrata su mobile */
+}
+
+/* Da tablet in su: hero più alta, testo a destra allineato a sinistra,
+   velo trasparente a sinistra (si vede il calciatore) e pieno a destra */
+@media (min-width: 768px) {
+  .hero {
+    min-height: 420px;
+    display: flex;
+    align-items: center; /* testo centrato in verticale */
+  }
+
+  .hero > .container {
+    width: 100%;
+  }
+
+  .hero::after {
+    background-color: transparent;
+    background-image: linear-gradient(
+      to right,
+      rgba(27, 51, 102, 0.15) 0%,
+      rgba(27, 51, 102, 0.6) 45%,
+      rgba(27, 51, 102, 0.92) 70%
+    );
+  }
+
+  .hero-testo {
+    text-align: left;
+  }
+
+  .hero-testo .form-ricerca {
+    margin-left: 0;
+  }
 }
 
 .btn-cerca {
@@ -43,14 +283,38 @@ body {
   color: #1b3366;
 }
 
-/* Titoli resi focusabili da JS (tabindex="-1"): niente contorno, non sono cliccabili */
-[tabindex="-1"]:focus {
-  outline: none;
+/* ===== 7. MOSTRA / NASCONDI PREFERITI (collapse) ===== */
+
+/* Riga con titolo e bottone: prende i margini che prima aveva il titolo */
+.intestazione-sezione {
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
 }
 
-/* ===== CONTENITORE PRINCIPALE ===== */
+/* Il testo giusto lo sceglie aria-expanded (aggiornato da Bootstrap) */
+.btn-mostra[aria-expanded="true"] .testo-mostra,
+.btn-mostra[aria-expanded="false"] .testo-nascondi {
+  display: none;
+}
+
+/* Freccia: in su quando la lista è aperta, ruotata quando è chiusa */
+.freccia-mostra {
+  display: inline-block; /* serve per poterla ruotare */
+  transition: transform 0.2s ease;
+}
+
+.btn-mostra[aria-expanded="false"] .freccia-mostra {
+  transform: rotate(180deg);
+}
+
+/* ===== 8. CONTENITORE E TITOLI SEZIONE ===== */
 .contenitore {
   max-width: 1100px;
+}
+
+/* Icone nei titoli di sezione: colore accento */
+.titolo-sezione .bi {
+  color: var(--sh-accento);
 }
 
 .titolo-sezione {
@@ -62,14 +326,14 @@ body {
 
 .nessun-risultato {
   font-style: italic;
-  color: #666666;
+  color: var(--sh-testo-secondario);
 }
 
-/* ===== FILTRO PER SPORT ===== */
+/* ===== 9. FILTRO PER SPORT ===== */
 .btn-filtro {
-  background-color: #ffffff;
-  border: 1px solid #1b3366;
-  color: #1b3366;
+  background-color: var(--sh-card);
+  border: 1px solid var(--sh-accento);
+  color: var(--sh-accento);
   border-radius: 999px; /* a "pillola" */
   padding: 0.35rem 1rem;
   font-size: 0.9rem;
@@ -79,33 +343,202 @@ body {
 
 .btn-filtro:hover,
 .btn-filtro:focus-visible {
-  background-color: #e3e8f2;
-  border-color: #1b3366;
-  color: #1b3366;
+  background-color: var(--sh-accento-chiaro);
+  border-color: var(--sh-accento);
+  color: var(--sh-accento);
 }
 
 /* Filtro attivo: lo stato lo dà l'attributo aria-pressed */
 .btn-filtro[aria-pressed="true"],
 .btn-filtro[aria-pressed="true"]:hover {
-  background-color: #1b3366;
-  border-color: #1b3366;
-  color: #ffffff;
+  background-color: var(--sh-accento);
+  border-color: var(--sh-accento);
+  color: var(--sh-su-accento);
 }
 
-/* ===== CARD APPUNTAMENTI ===== */
+/* ===== 10. CARD APPUNTAMENTI ===== */
 .card-appuntamenti {
-  background-color: #ffffff;
+  background-color: var(--sh-card);
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 4px var(--sh-ombra);
   padding: 1.5rem;
 }
 
-/* ===== CARD SQUADRA (risultati e, più avanti, preferiti) ===== */
+/* ===== 11. CARD PARTITA (ultimi risultati) ===== */
+
+/* Riga sopra la striscia: nota a sinistra, frecce a destra */
+.carosello-barra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem; /* lo spazio sotto lo dà il padding della striscia */
+}
+
+.nota-esempio {
+  font-size: 0.85rem;
+  color: var(--sh-testo-secondario);
+  margin-bottom: 0;
+}
+
+/* Freccia disattivata a inizio/fine striscia */
+.carosello-freccia:disabled {
+  opacity: 0.4;
+}
+
+/* La striscia: card in fila, scorre di lato e si "aggancia" all'inizio di una card */
+.lista-partite {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  list-style: none;
+  /* Spazio interno per sollevamento e alone all'hover: chi scorre ritaglia
+     tutto ciò che esce dai suoi bordi, ombre comprese */
+  padding: 1rem 0.75rem 1.5rem;
+  margin: 0 -0.75rem; /* compensa il padding laterale: card allineate al contenuto */
+  scroll-padding-inline: 0.75rem; /* lo scroll-snap tiene conto del padding */
+  scrollbar-width: none; /* barra di scorrimento nascosta: ci sono le frecce */
+}
+
+.lista-partite::-webkit-scrollbar {
+  display: none; /* stessa cosa per Chrome, Edge e Safari */
+}
+
+/* Larghezza di ogni card: mobile 1 card intera */
+.voce-partita {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+/* Tablet: 2 card visibili (100% meno 1 gap, diviso 2) */
+@media (min-width: 768px) {
+  .voce-partita {
+    flex-basis: calc((100% - 1rem) / 2);
+  }
+}
+
+/* PC: 3 card visibili (100% meno 2 gap, diviso 3) */
+@media (min-width: 992px) {
+  .voce-partita {
+    flex-basis: calc((100% - 2rem) / 3);
+  }
+}
+
+.card-partita {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  height: 100%; /* card della stessa riga alte uguali */
+  padding: 1rem;
+  text-align: center; /* campionato, tabellone, data e luogo al centro */
+  color: inherit;
+  background-color: var(--sh-card);
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px var(--sh-ombra);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-partita:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 16px var(--sh-ombra-hover); /* alone azzurro */
+}
+
+.card-partita:focus-visible {
+  outline: 3px solid var(--sh-accento);
+  outline-offset: 2px;
+}
+
+.card-partita-testa {
+  display: flex;
+  flex-wrap: wrap; /* su schermi stretti il badge va a capo */
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-partita-lega {
+  font-family: var(--sh-font-titoli);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sh-testo-secondario);
+}
+
+/* Tabellone: casa | punteggio | trasferta */
+.card-partita-tabellone {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+/* Colonna squadra: logo sopra, nome sotto, centrati */
+.card-partita-squadra {
+  flex: 1; /* le due colonne hanno la stessa larghezza: il punteggio resta al centro */
+  min-width: 0; /* permette ai nomi lunghi di andare a capo */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.card-partita-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+/* Stemma segnaposto: cerchio con le iniziali */
+.card-partita-stemma {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--sh-accento-chiaro);
+  border: 2px solid var(--sh-accento);
+  color: var(--sh-accento);
+  font-family: var(--sh-font-titoli);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.card-partita-nome {
+  font-weight: 700;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.card-partita-punteggio {
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: -1.2rem; /* allineato ai loghi, non ai nomi */
+  font-family: var(--sh-font-titoli);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--sh-accento);
+  white-space: nowrap;
+}
+
+.card-partita-piede {
+  font-size: 0.8rem;
+  color: var(--sh-testo-secondario);
+  border-top: 1px solid var(--sh-bordo);
+  padding-top: 0.5rem;
+  margin-top: auto; /* il piede resta in fondo anche se la card è più alta */
+}
+
+/* ===== 12. CARD SQUADRA (risultati e preferiti) ===== */
 .card-squadra {
   flex: 1 1 280px; /* parte da 280px, cresce, va a capo */
-  background-color: #ffffff;
+  background-color: var(--sh-card);
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 4px var(--sh-ombra);
   padding: 1rem;
   text-align: center;
   cursor: pointer;
@@ -114,11 +547,11 @@ body {
 
 .card-squadra:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px var(--sh-ombra-hover); /* alone azzurro */
 }
 
 .card-squadra:focus-visible {
-  outline: 3px solid #1b3366;
+  outline: 3px solid var(--sh-accento);
   outline-offset: 2px;
 }
 
@@ -137,7 +570,7 @@ body {
 
 .card-squadra p {
   font-size: 0.875rem;
-  color: #666666;
+  color: var(--sh-testo-secondario);
   margin-bottom: 0.25rem;
 }
 
@@ -145,9 +578,9 @@ body {
 .btn-preferito {
   width: 100%;
   margin-top: 0.75rem;
-  background-color: #ffffff;
-  border: 1px solid #1b3366;
-  color: #1b3366;
+  background-color: var(--sh-card);
+  border: 1px solid var(--sh-accento);
+  color: var(--sh-accento);
   font-size: 0.875rem;
   font-weight: 700;
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -155,17 +588,17 @@ body {
 
 .btn-preferito:hover,
 .btn-preferito:focus-visible {
-  background-color: #e3e8f2;
-  border-color: #1b3366;
-  color: #1b3366;
+  background-color: var(--sh-accento-chiaro);
+  border-color: var(--sh-accento);
+  color: var(--sh-accento);
 }
 
 /* Squadra già nei preferiti: bottone disabilitato, aspetto "spento" */
 .btn-preferito:disabled,
 .btn-preferito:disabled:hover {
-  background-color: #e9ecef;
-  border-color: #ced4da;
-  color: #6c757d;
+  background-color: var(--sh-disattivo-sfondo);
+  border-color: var(--sh-disattivo-bordo);
+  color: var(--sh-disattivo-testo);
   opacity: 1; /* Bootstrap lo renderebbe semitrasparente */
   cursor: not-allowed;
   pointer-events: auto; /* Bootstrap mette "none": il click arriverebbe alla card */
@@ -175,9 +608,9 @@ body {
 .btn-rimuovi {
   width: 100%;
   margin-top: 0.75rem;
-  background-color: #fde4e6;
+  background-color: var(--sh-rimuovi-sfondo);
   border: 1px solid #dc3545;
-  color: #a30000;
+  color: var(--sh-rimuovi-testo);
   font-size: 0.875rem;
   font-weight: 700;
   transition: background-color 0.2s ease;
@@ -185,22 +618,22 @@ body {
 
 .btn-rimuovi:hover,
 .btn-rimuovi:focus-visible {
-  background-color: #f8c9cd;
+  background-color: var(--sh-rimuovi-hover);
   border-color: #dc3545;
-  color: #a30000;
+  color: var(--sh-rimuovi-testo);
 }
 
-/* ===== CARD DETTAGLI SQUADRA ===== */
+/* ===== 13. CARD DETTAGLI SQUADRA ===== */
 .card-risultato {
-  background-color: #ffffff;
+  background-color: var(--sh-card);
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 4px var(--sh-ombra);
   padding: 1.5rem;
   margin-top: 3.5rem;
 }
 
 .card-risultato h3 {
-  color: #1b3366;
+  color: var(--sh-accento);
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 2rem;
@@ -210,12 +643,12 @@ body {
   font-size: 1.15rem;
   font-weight: 700;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid #1b3366;
+  border-bottom: 2px solid var(--sh-accento);
   margin-bottom: 1rem;
 }
 
 .lista-eventi li {
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--sh-bordo);
 }
 
 /* Ogni evento è un bottone che apre la modal */
@@ -228,22 +661,53 @@ body {
   border-radius: 4px;
   text-align: left;
   color: inherit;
-  transition: background-color 0.2s ease;
+  position: relative; /* serve a z-index */
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Lift up: la riga si alza con l'alone azzurro, sopra quella successiva */
 .btn-evento:hover {
-  background-color: #f4f5f8;
+  background-color: var(--sh-accento-chiaro);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--sh-ombra-hover);
+  z-index: 1;
 }
 
 .btn-evento:focus-visible {
-  outline: 3px solid #1b3366;
+  outline: 3px solid var(--sh-accento);
   outline-offset: 2px;
+}
+
+/* Appuntamenti: data e partita a sinistra, luogo a destra (sotto su mobile) */
+.evento-con-luogo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.luogo-evento {
+  font-size: 0.85rem;
+  color: var(--sh-testo-secondario);
+}
+
+@media (min-width: 768px) {
+  .evento-con-luogo {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .luogo-evento {
+    text-align: right;
+    flex-shrink: 0; /* non si schiaccia se il nome della partita è lungo */
+  }
 }
 
 .data-evento {
   display: block;
   font-size: 0.8rem;
-  color: #666666;
+  color: var(--sh-testo-secondario);
 }
 
 .nome-evento {
@@ -255,7 +719,13 @@ body {
   padding: 0.75rem 0;
 }
 
-/* ===== MODAL DETTAGLI EVENTO ===== */
+/* ===== 14. MODAL (tutte) ===== */
+/* Bordino azzurro: cambio la variabile che Bootstrap usa per il bordo */
+.modal {
+  --bs-modal-border-color: var(--sh-azzurro);
+}
+
+/* ===== 15. MODAL DETTAGLI EVENTO ===== */
 .tabellone {
   display: flex;
   justify-content: space-around;
@@ -284,11 +754,11 @@ body {
 .tabellone-punteggio {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1b3366;
+  color: var(--sh-accento);
   margin-bottom: 0;
 }
 
-/* ===== MODAL INFO SQUADRA ===== */
+/* ===== 16. MODAL INFO SQUADRA ===== */
 .intestazione-squadra {
   display: flex;
   align-items: center;
@@ -309,14 +779,14 @@ body {
 }
 
 .badge-sigla {
-  background-color: #1b3366;
-  color: #ffffff;
+  background-color: var(--sh-accento);
+  color: var(--sh-su-accento);
 }
 
 .titolo-sezione-modale {
   font-size: 1rem;
   font-weight: 700;
-  color: #1b3366;
+  color: var(--sh-accento);
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
 }
@@ -331,7 +801,7 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid #ced4da; /* si vede anche il bianco */
+  border: 1px solid var(--sh-disattivo-bordo); /* si vede anche il bianco */
 }
 
 .descrizione-squadra {
@@ -348,10 +818,10 @@ body {
 
 .link-squadra {
   display: inline-block;
-  border: 1px solid #1b3366;
+  border: 1px solid var(--sh-accento);
   border-radius: 999px;
   padding: 0.3rem 0.9rem;
-  color: #1b3366;
+  color: var(--sh-accento);
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
@@ -360,23 +830,421 @@ body {
 
 .link-squadra:hover,
 .link-squadra:focus-visible {
-  background-color: #e3e8f2;
-  color: #1b3366;
+  background-color: var(--sh-accento-chiaro);
+  color: var(--sh-accento);
 }
 
-/* ===== MENO ANIMAZIONI SE RICHIESTO ===== */
+/* ===== 17. NOTIFICA (toast) ===== */
+.notifica-aggiunta {
+  background-color: #1b3366;
+  color: #ffffff;
+}
+
+.notifica-rimossa {
+  background-color: #a30000;
+  color: #ffffff;
+}
+
+.toast-body {
+  font-weight: 600;
+}
+
+/* ===== 18. FOOTER ===== */
+.footer {
+  background-color: var(--sh-footer);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 1.5rem 0;
+  margin-top: 4rem;
+  font-size: 0.9rem;
+}
+
+/* Link e bottoni del footer (stesso aspetto).
+   Sottolineatura disegnata come sfondo: così può "crescere" con una transizione */
+.footer a,
+.link-footer {
+  color: #ffffff;
+  text-decoration: none;
+  padding-bottom: 4px; /* abbassa la riga sotto il testo */
+  background-image: linear-gradient(currentColor, currentColor); /* striscia del colore del testo */
+  background-repeat: no-repeat;
+  background-position: 0 100%; /* in basso a sinistra */
+  background-size: 0% 2px; /* larghezza 0: invisibile */
+  transition: background-size 0.25s ease, color 0.2s ease;
+}
+
+.footer a:hover,
+.footer a:focus-visible,
+.link-footer:hover,
+.link-footer:focus-visible,
+.link-footer[aria-expanded="true"] {
+  color: var(--sh-azzurro);
+  background-size: 100% 2px; /* la riga cresce da sinistra a destra */
+}
+
+/* I bottoni del footer sembrano link: niente sfondo, bordo o padding da bottone */
+.link-footer {
+  background-color: transparent;
+  border: none;
+  padding: 0 0 4px;
+  font: inherit;
+}
+
+/* Pannelli About us / Accessibilità */
+.footer-pannello {
+  max-width: 700px; /* righe troppo lunghe si leggono male */
+  margin: 1rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  line-height: 1.6;
+}
+
+/* ===== 19. MENO ANIMAZIONI SE RICHIESTO ===== */
 @media (prefers-reduced-motion: reduce) {
   .card-squadra,
   .btn-cerca,
+  .btn-barra,
   .btn-preferito,
   .btn-rimuovi,
   .btn-filtro,
   .btn-evento,
-  .link-squadra {
+  .link-squadra,
+  .footer a,
+  .link-footer,
+  .freccia-mostra,
+  .card-partita {
     transition: none;
   }
 
-  .card-squadra:hover {
+  .card-squadra:hover,
+  .btn-evento:hover,
+  .card-partita:hover {
     transform: none;
   }
+
+  /* Lo sfondo della hero è subito al suo posto */
+  .hero::before {
+    animation: none;
+  }
+}
+
+/* ===== 20. MODALITÀ SEMPLIFICATA ===== */
+/* Tutte le regole valgono solo con l'attributo data-semplificata="true" su <html> */
+
+/* 2. Contrasto alto + 3. font leggibile: tema chiaro */
+[data-semplificata="true"] {
+  --sh-font-testo: "Atkinson Hyperlegible", Verdana, sans-serif;
+  --sh-font-titoli: "Atkinson Hyperlegible", Verdana, sans-serif;
+  --sh-accento: #0b2a6b; /* blu più scuro: più contrasto sul bianco */
+  --sh-su-accento: #ffffff;
+  --sh-accento-chiaro: #dde6f7;
+  --sh-sfondo: #ffffff;
+  --sh-card: #ffffff;
+  --sh-testo: #000000;
+  --sh-testo-secondario: #000000; /* niente grigi chiari */
+  --sh-bordo: #000000;
+  --sh-disattivo-testo: #333333;
+  --sh-disattivo-bordo: #333333;
+  --sh-rimuovi-testo: #8a0000;
+  --bs-body-color: var(--sh-testo); /* anche modal, input e alert di Bootstrap */
+  --bs-body-bg: var(--sh-card);
+
+  font-size: 120%; /* 1. testo più grande: tutto ciò che è in rem cresce */
+}
+
+/* 2. Contrasto alto: tema scuro (servono tutti e due gli attributi) */
+[data-bs-theme="dark"][data-semplificata="true"] {
+  --sh-accento: #a8c4ff;
+  --sh-su-accento: #000000;
+  --sh-accento-chiaro: #1f2a40;
+  --sh-sfondo: #000000;
+  --sh-card: #000000;
+  --sh-testo: #ffffff;
+  --sh-testo-secondario: #ffffff;
+  --sh-bordo: #ffffff;
+  --sh-disattivo-testo: #cccccc;
+  --sh-disattivo-bordo: #cccccc;
+  --sh-rimuovi-testo: #ffb3bb;
+}
+
+/* 1. Lettura più comoda */
+[data-semplificata="true"] body {
+  line-height: 1.7;
+}
+
+[data-semplificata="true"] .marchio,
+[data-semplificata="true"] .hero-titolo,
+[data-semplificata="true"] .titolo-sezione,
+[data-semplificata="true"] .titolo-eventi,
+[data-semplificata="true"] .titolo-sezione-modale,
+[data-semplificata="true"] .modal-title,
+[data-semplificata="true"] .btn-filtro,
+[data-semplificata="true"] .card-partita-lega {
+  text-transform: none; /* il maiuscolo si legge peggio */
+  letter-spacing: normal;
+}
+
+[data-semplificata="true"] .nessun-risultato,
+[data-semplificata="true"] .nessun-evento {
+  font-style: normal; /* il corsivo si legge peggio */
+}
+
+/* 2. Hero: niente foto né velo, solo blu pieno con testo bianco */
+[data-semplificata="true"] .hero::before,
+[data-semplificata="true"] .hero::after {
+  display: none;
+}
+
+/* 2. Card con bordo netto al posto dell'ombra */
+[data-semplificata="true"] .card-squadra,
+[data-semplificata="true"] .card-appuntamenti,
+[data-semplificata="true"] .card-risultato,
+[data-semplificata="true"] .card-partita {
+  border: 2px solid var(--sh-bordo);
+  box-shadow: none;
+}
+
+/* 4. Niente animazioni né transizioni, ovunque */
+[data-semplificata="true"] *,
+[data-semplificata="true"] *::before,
+[data-semplificata="true"] *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* 4. Hover fermo: niente sollevamento né alone, cambia solo il bordo */
+[data-semplificata="true"] .card-squadra:hover,
+[data-semplificata="true"] .btn-evento:hover,
+[data-semplificata="true"] .card-partita:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+[data-semplificata="true"] .card-squadra:hover,
+[data-semplificata="true"] .card-partita:hover {
+  border-color: var(--sh-accento);
+}
+
+/* 4. Link sempre sottolineati (anche nel footer) */
+[data-semplificata="true"] a {
+  text-decoration: underline;
+}
+
+[data-semplificata="true"] .footer a,
+[data-semplificata="true"] .link-footer {
+  background-image: none; /* tolgo la sottolineatura animata */
+  text-decoration: underline;
+}
+
+/* 4. Contorno di focus più spesso e staccato */
+[data-semplificata="true"] :focus-visible {
+  outline: 4px solid var(--sh-accento) !important;
+  outline-offset: 3px;
+}
+
+/* ===== 21. PALLINA APP E MODAL APP ===== */
+
+/* Pallina fissa in basso a destra, sotto le modal (Bootstrap: velo 1050) */
+.palla-app {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1040;
+  transition: transform 0.3s ease;
+}
+
+/* Si alza dell'altezza della notifica (--sh-alzata la imposta il JS) */
+.palla-app.alzata {
+  transform: translateY(calc(-1 * var(--sh-alzata, 0px)));
+}
+
+/* Il pallone: solo l'emoji, grande quanto tutta l'area, senza bordo né sfondo */
+.palla-app-bottone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 3.5rem; /* 56px: il pallone riempie lo spazio */
+  line-height: 1;
+  /* drop-shadow segue la forma del pallone (box-shadow disegnerebbe una scatola) */
+  filter: drop-shadow(0 4px 6px var(--sh-ombra));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* All'avvio il pallone entra da sinistra rotolando (su uno span interno:
+   un'animazione sul bottone bloccherebbe la rotazione all'hover) */
+.palla-app-pallone {
+  display: inline-block; /* un elemento in linea non si può trasformare */
+  animation: rotola-dentro 2.4s ease-out 0.3s both;
+}
+
+/* Da fuori schermo a sinistra (-100vw) al suo posto, girando in senso orario (4 giri) */
+@keyframes rotola-dentro {
+  from {
+    transform: translateX(-100vw) rotate(-1440deg);
+  }
+  to {
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+/* Hover: il pallone gira un po' e si illumina d'azzurro */
+.palla-app-bottone:hover {
+  transform: rotate(25deg) scale(1.05);
+  filter: drop-shadow(0 4px 10px var(--sh-ombra-hover));
+}
+
+.palla-app-bottone:focus-visible {
+  outline: 3px solid var(--sh-accento);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+/* Finestrella a sinistra della pallina, centrata in altezza: nascosta finché non serve.
+   padding-right = "ponte" trasparente: passando dal pallone alla scritta resta aperta */
+.palla-app-finestra {
+  position: absolute;
+  right: 100%; /* bordo destro attaccato al bordo sinistro del pallone */
+  top: 50%;
+  padding-right: 0.5rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden; /* nascosta anche a click e Tab */
+  transform: translate(6px, -50%); /* -50%: centrata in altezza; 6px: parte da destra */
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+
+/* Si mostra con: mouse sopra, focus da tastiera dentro, oppure tocco (classe "aperta") */
+.palla-app:hover .palla-app-finestra,
+.palla-app:focus-within .palla-app-finestra,
+.palla-app.aperta .palla-app-finestra {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(0, -50%);
+}
+
+/* La scritta: piccola card con bordo azzurro come le modal */
+.palla-app-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--sh-azzurro);
+  border-radius: 8px;
+  background-color: var(--sh-card);
+  color: var(--sh-testo);
+  font-weight: 600;
+  box-shadow: 0 4px 12px var(--sh-ombra);
+}
+
+.palla-app-link:hover,
+.palla-app-link:focus-visible {
+  background-color: var(--sh-accento-chiaro);
+  color: var(--sh-accento);
+}
+
+/* Modal app: la foto non esce dagli angoli arrotondati */
+.modale-app {
+  overflow: hidden;
+}
+
+/* Foto in alto (Ferid Faiqoglu su Pexels, versione larga 800px) */
+.modale-app-immagine {
+  position: relative;
+  height: 220px;
+  background-image: url("https://images.pexels.com/photos/40189105/pexels-photo-40189105.jpeg?auto=compress&cs=tinysrgb&w=800");
+  background-size: cover;
+  background-position: center 40%;
+}
+
+/* Sfumatura: dal trasparente al colore della modal (segue anche il tema scuro) */
+.modale-app-immagine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to bottom, transparent 35%, var(--bs-modal-bg) 100%);
+}
+
+/* X di chiusura sopra la foto, in un cerchio semitrasparente */
+.modale-app-chiudi {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1; /* davanti alla sfumatura */
+  padding: 0.6rem;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+  opacity: 1;
+}
+
+.modale-app-titolo {
+  position: relative; /* davanti alla sfumatura */
+  margin-top: -1.5rem; /* sale un po' sulla parte sfumata */
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sh-accento);
+}
+
+/* Bottoni dei negozi (segnaposto, disabilitati) */
+.btn-store {
+  border: 1px solid var(--sh-accento);
+  border-radius: 999px;
+  color: var(--sh-accento);
+  font-weight: 600;
+  padding: 0.5rem 1.1rem;
+}
+
+.btn-store:disabled {
+  border-color: var(--sh-accento);
+  color: var(--sh-accento);
+  opacity: 0.6;
+}
+
+.modale-app-nota {
+  font-size: 0.85rem;
+  color: var(--sh-testo-secondario);
+}
+
+/* Riduci animazioni: la pallina non ruota e si sposta di colpo */
+@media (prefers-reduced-motion: reduce) {
+  .palla-app,
+  .palla-app-bottone,
+  .palla-app-finestra {
+    transition: none;
+  }
+
+  /* Il pallone è subito al suo posto */
+  .palla-app-pallone {
+    animation: none;
+  }
+
+  .palla-app-bottone:hover {
+    transform: none;
+  }
+}
+
+/* Modalità semplificata: niente rotazione, niente foto nella modal */
+[data-semplificata="true"] .palla-app-bottone:hover {
+  transform: none;
+}
+
+[data-semplificata="true"] .modale-app-immagine {
+  height: 3.5rem; /* resta lo spazio per la X */
+  background-image: none;
+}
+
+[data-semplificata="true"] .modale-app-immagine::after {
+  display: none;
+}
+
+[data-semplificata="true"] .modale-app-titolo {
+  margin-top: 0;
+  text-transform: none;
+  letter-spacing: normal;
 }

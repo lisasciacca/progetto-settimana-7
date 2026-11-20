@@ -10,6 +10,7 @@ export class Evento {
     CANC: "Annullata",
   };
 
+  // dati = oggetto grezzo di un evento restituito dall'API
   constructor(dati) {
     this.id = dati.idEvent;
     this.nomeEvento = dati.strEvent;
@@ -28,6 +29,7 @@ export class Evento {
     this.citta = dati.strCity;
     this.paese = dati.strCountry;
     this.stato = dati.strStatus; // es. "NS", "FT"
+    this.esempio = dati.esempio === true; // true solo per le partite segnaposto
   }
 
   // "2026-05-17" → "17/05/2026"
@@ -68,6 +70,6 @@ export class Evento {
     if (this.punteggioCasa === null || this.punteggioTrasferta === null) {
       return "";
     }
-    return `${this.punteggioCasa} - ${this.punteggioTrasferta}`;
+    return `${this.punteggioCasa} – ${this.punteggioTrasferta}`;
   }
 }
