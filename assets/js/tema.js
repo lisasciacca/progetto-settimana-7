@@ -1,7 +1,7 @@
 // tema.js – Tema chiaro / scuro
 const CHIAVE_TEMA = "sportshub-tema";
 
-// Tema di partenza: quello scelto dall'utente, altrimenti sempre il chiaro
+// Tema di partenza: quello scelto dall'utente, altrimenti lo scuro (predefinito)
 export function temaIniziale() {
   try {
     const salvato = localStorage.getItem(CHIAVE_TEMA);
@@ -10,7 +10,7 @@ export function temaIniziale() {
     console.error("Impossibile leggere il tema:", error);
   }
 
-  return "light";
+  return "dark";
 }
 
 // Applica il tema a tutta la pagina (Bootstrap legge data-bs-theme)
