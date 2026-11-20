@@ -4,9 +4,10 @@ import { Evento } from "./Evento.js";
 // Deve finire con "/" perché new URL() aggiunga il file correttamente
 const BASE_URL = "https://www.thesportsdb.com/api/v1/json/123/";
 
-// Fa la fetch, controlla response.ok e restituisce il JSON
-async function getJSON(url) {
-  const response = await fetch(url);
+// Fa la fetch, controlla response.ok e restituisce il JSON.
+// signal (facoltativo) permette di annullare la richiesta con AbortController
+async function getJSON(url, signal) {
+  const response = await fetch(url, { signal });
   if (!response.ok) {
     throw new Error(`Errore HTTP: ${response.status}`);
   }
@@ -14,11 +15,11 @@ async function getJSON(url) {
 }
 
 // Cerca le squadre per nome → array di Squadra (vuoto se nessuna)
-export async function cercaSquadre(query) {
+export async function cercaSquadre(query, signal) {
   const url = new URL("searchteams.php", BASE_URL);
   url.searchParams.set("t", query);
 
-  const dati = await getJSON(url);
+  const dati = await getJSON(url, signal);
 
   if (!dati.teams) return []; // teams è null → nessuna squadra
   return dati.teams.map((squadra) => new Squadra(squadra));
@@ -42,4 +43,13 @@ export async function caricaEventi(idTeam) {
   const ultimi = (datiUltimi.results || []).map((e) => new Evento(e));
 
   return { prossimi, ultimi };
+}
+
+// Solo i prossimi eventi di una squadra (usata per gli appuntamenti dei preferiti)
+export async function caricaProssimiEventi(idTeam) {
+  const url = new URL("eventsnext.php", BASE_URL);
+  url.searchParams.set("id", idTeam);
+
+  const dati = await getJSON(url);
+  return (dati.events || []).map((e) => new Evento(e));
 }

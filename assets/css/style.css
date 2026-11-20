@@ -43,6 +43,11 @@ body {
   color: #1b3366;
 }
 
+/* Titoli resi focusabili da JS (tabindex="-1"): niente contorno, non sono cliccabili */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
 /* ===== CONTENITORE PRINCIPALE ===== */
 .contenitore {
   max-width: 1100px;
@@ -58,6 +63,41 @@ body {
 .nessun-risultato {
   font-style: italic;
   color: #666666;
+}
+
+/* ===== FILTRO PER SPORT ===== */
+.btn-filtro {
+  background-color: #ffffff;
+  border: 1px solid #1b3366;
+  color: #1b3366;
+  border-radius: 999px; /* a "pillola" */
+  padding: 0.35rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-filtro:hover,
+.btn-filtro:focus-visible {
+  background-color: #e3e8f2;
+  border-color: #1b3366;
+  color: #1b3366;
+}
+
+/* Filtro attivo: lo stato lo dà l'attributo aria-pressed */
+.btn-filtro[aria-pressed="true"],
+.btn-filtro[aria-pressed="true"]:hover {
+  background-color: #1b3366;
+  border-color: #1b3366;
+  color: #ffffff;
+}
+
+/* ===== CARD APPUNTAMENTI ===== */
+.card-appuntamenti {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
 }
 
 /* ===== CARD SQUADRA (risultati e, più avanti, preferiti) ===== */
@@ -101,7 +141,37 @@ body {
   margin-bottom: 0.25rem;
 }
 
-/* Bottone rimuovi: servirà con i preferiti */
+/* Bottone stella: aggiungi ai preferiti */
+.btn-preferito {
+  width: 100%;
+  margin-top: 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid #1b3366;
+  color: #1b3366;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-preferito:hover,
+.btn-preferito:focus-visible {
+  background-color: #e3e8f2;
+  border-color: #1b3366;
+  color: #1b3366;
+}
+
+/* Squadra già nei preferiti: bottone disabilitato, aspetto "spento" */
+.btn-preferito:disabled,
+.btn-preferito:disabled:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #6c757d;
+  opacity: 1; /* Bootstrap lo renderebbe semitrasparente */
+  cursor: not-allowed;
+  pointer-events: auto; /* Bootstrap mette "none": il click arriverebbe alla card */
+}
+
+/* Bottone rimuovi (card dei preferiti) */
 .btn-rimuovi {
   width: 100%;
   margin-top: 0.75rem;
@@ -145,8 +215,29 @@ body {
 }
 
 .lista-eventi li {
-  padding: 0.75rem 0;
   border-bottom: 1px solid #e9ecef;
+}
+
+/* Ogni evento è un bottone che apre la modal */
+.btn-evento {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 0.5rem;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  text-align: left;
+  color: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.btn-evento:hover {
+  background-color: #f4f5f8;
+}
+
+.btn-evento:focus-visible {
+  outline: 3px solid #1b3366;
+  outline-offset: 2px;
 }
 
 .data-evento {
@@ -161,13 +252,127 @@ body {
 
 .nessun-evento {
   font-style: italic;
+  padding: 0.75rem 0;
+}
+
+/* ===== MODAL DETTAGLI EVENTO ===== */
+.tabellone {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.tabellone-squadra {
+  flex: 1;
+}
+
+.tabellone-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.tabellone-nome {
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.tabellone-punteggio {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1b3366;
+  margin-bottom: 0;
+}
+
+/* ===== MODAL INFO SQUADRA ===== */
+.intestazione-squadra {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.logo-modale {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.nome-squadra-modale {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.badge-sigla {
+  background-color: #1b3366;
+  color: #ffffff;
+}
+
+.titolo-sezione-modale {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1b3366;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.colori-squadra {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.colore-sociale {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #ced4da; /* si vede anche il bianco */
+}
+
+.descrizione-squadra {
+  white-space: pre-line; /* mantiene gli a capo dei paragrafi */
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.lista-link {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.link-squadra {
+  display: inline-block;
+  border: 1px solid #1b3366;
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  color: #1b3366;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.link-squadra:hover,
+.link-squadra:focus-visible {
+  background-color: #e3e8f2;
+  color: #1b3366;
 }
 
 /* ===== MENO ANIMAZIONI SE RICHIESTO ===== */
 @media (prefers-reduced-motion: reduce) {
   .card-squadra,
   .btn-cerca,
-  .btn-rimuovi {
+  .btn-preferito,
+  .btn-rimuovi,
+  .btn-filtro,
+  .btn-evento,
+  .link-squadra {
     transition: none;
   }
 
